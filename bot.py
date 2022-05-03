@@ -4,7 +4,7 @@ import random
 from discord.ext import commands
 from discord.ext.commands import has_permissions
 from dotenv import load_dotenv
-from utils import get_weapons, save_new_weapons, get_spellcard, save_new_spellcard
+from utils import get_weapons, get_all_weapons, save_new_weapons, get_spellcard, get_all_spells, save_new_spellcard
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -40,6 +40,8 @@ async def damage(ctx, *args):
     weapon = '_'.join(args)
     if weapon is None:
         damage_res = "A lot of damage! (You need to tell me the weapon! :person_facepalming:)"
+    elif weapon == "ls":
+        damage_res = get_all_weapons()
     else:
         damage_res = get_weapons(weapon)
     if damage_res is None:
@@ -52,6 +54,8 @@ async def spellcard(ctx, *args):
     spell = '_'.join(args)
     if spell is None:
         spell_res = "You cast fireball! (You need to tell me the spell! :person_facepalming:)"
+    elif spell == "ls":
+        spell_res = get_all_spells()
     else:
         spell_res = get_spellcard(spell)
     if spell_res is None:

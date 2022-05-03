@@ -13,6 +13,17 @@ def get_weapons(weapon_name):
             return response
 
 
+def get_all_weapons():
+    con = sl.connect('dndinfo.db')
+    with con:
+        data = con.execute(f"SELECT name FROM WEAPONS")
+        rows = data.fetchall()
+        resp = ""
+        for r in rows:
+            resp += r[0].replace('_', ' ').title() + "\n"
+    return resp
+
+
 def save_new_weapons(name, damage, damage_type, properties):
     con = sl.connect('dndinfo.db')
 
@@ -35,6 +46,17 @@ def get_spellcard(spell_name):
         else:
             response = f"**{row[1].replace('_', ' ').title()}** \n > {row[3]} \n\n{row[2]}"
             return response
+
+
+def get_all_spells():
+    con = sl.connect('dndinfo.db')
+    with con:
+        data = con.execute(f"SELECT spell FROM SPELLCARDS")
+        rows = data.fetchall()
+        resp = ""
+        for r in rows:
+            resp += r[0].replace('_', ' ').title() + "\n"
+    return resp
 
 
 def save_new_spellcard(spell, spellcard, short_def):
