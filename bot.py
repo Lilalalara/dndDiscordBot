@@ -4,7 +4,8 @@ import random
 from discord.ext import commands
 from discord.ext.commands import has_permissions
 from dotenv import load_dotenv
-from utils import get_weapons, get_all_weapons, save_new_weapons, get_spellcard, get_all_spells, save_new_spellcard
+from utils import get_weapons, get_all_weapons, save_new_weapons, get_spellcard, get_all_spells, save_new_spellcard, \
+    get_condition, get_all_conditions
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -67,6 +68,20 @@ async def spellcard(ctx, *args):
 @bot.command(name='features', aliases=['feat'], help='Tells you, what the feature is doing')
 async def features():
     pass
+
+
+@bot.command(name='condition', aliases=['con'], help='Tells you what a condition means')
+async def condition(ctx, con):
+    if con is None:
+        con_res = "You need to tell me the condition! :person_facepalming:"
+    elif con == "ls":
+        con_res = get_all_conditions()
+    else:
+        con_res = get_condition(con)
+    if con_res is None:
+        con_res = f"I do not know! ({con} is not a condition! :person_shrugging:)"
+
+    await ctx.send(con_res)
 
 
 @bot.command(name='addweapon', aliases=['addw'], hidden=True)

@@ -69,3 +69,26 @@ def save_new_spellcard(spell, spellcard, short_def):
     data = [(new_id, f'{spell}', f'{spellcard}', f'{short_def}')]
     with con:
         con.executemany(sql, data)
+
+
+def get_condition(cond_name):
+    con = sl.connect('dndinfo.db')
+    with con:
+        data = con.execute(f"SELECT * FROM CONDITIONS WHERE name == '{cond_name.lower()}'")
+        row = data.fetchone()
+        if row is None:
+            return None
+        else:
+            response = f"**{row[1].replace('_', ' ').title()}** \n >>> {row[2]}"
+            return response
+
+
+def get_all_conditions():
+    con = sl.connect('dndinfo.db')
+    with con:
+        data = con.execute(f"SELECT name FROM CONDITIONS")
+        rows = data.fetchall()
+        resp = ""
+        for r in rows:
+            resp += r[0].replace('_', ' ').title() + "\n"
+    return resp
