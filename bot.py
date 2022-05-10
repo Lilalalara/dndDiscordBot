@@ -1,6 +1,7 @@
 import os
 import random
 
+import discord
 from discord.ext import commands
 from discord.ext.commands import has_permissions
 from dotenv import load_dotenv
@@ -9,8 +10,24 @@ from utils import get_weapons, get_all_weapons, save_new_weapons, get_spellcard,
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-help_command = commands.DefaultHelpCommand(no_category='Commands', indent=4)
-bot = commands.Bot(command_prefix='!', help_command=help_command)
+bot = commands.Bot(command_prefix='!', help_command=None)
+
+
+@bot.command()
+async def help(ctx):
+    await ctx.send(
+        "\n**----- All available commands -----**\n\n"
+        "**\!help**  Returns this message\n \n"
+        "**\!damage <weapon>**  Returns damage dice, damage type, and properties of the weapon *(short !dmg)*\n"
+        "**\!dmg ls** Returns a list of all weapons currently in the system\n"
+        "**\!spellcard <spell>** Returns a short summary and the spellcard of the spell *(short !spell)*\n"
+        "**\!spell ls** Returns a list of all spells currently in the system\n"
+        "**\!condition <condition>** Returns a short summary of the condition*(short !con)*\n"
+        "**\!con ls**  Returns a list of all conditions\n\n"
+        "**\!roll <xdx>** Simulates rolling the dice *(short !r)*\n\n"
+        "--- **For Admins when wanting to add new stuff** ---  *Always(!) put every element in quotation marks.*\n"
+        "**\!addweapon '<name>' '<damage>' '<damage_type>' '<properties>'** Adds a new instance of a weapon to the database. *(short !addw)*\n"
+        "**\!addspellcard '<spell>' '<spellcard>' '<short_description>'** Adds a new instance of a spell to the database.  *(short !adds)*")
 
 
 @bot.command(name='99', help='Responds with a random quote from Brooklyn 99', hidden=True)
@@ -22,6 +39,11 @@ async def nine_nine(ctx):
     ]
     response = random.choice(brooklyn_99_quotes)
     await ctx.send(response)
+
+
+@bot.command(name='fireball', description="Send fireball gif!", hidden=True)
+async def explode(ctx):
+    await ctx.send(file=discord.File("gifs/house-explosion.gif"))
 
 
 @bot.command(name='roll', aliases=['r'], help='Simulates rolling dice.')
