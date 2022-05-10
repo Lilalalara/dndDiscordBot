@@ -37,11 +37,23 @@ con = sl.connect('dndinfo.db')
 
 # endregion
 
+#with con:
+#    con.execute("""
+#        CREATE TABLE CONDITIONS(
+#            id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+#            name TEXT,
+#            desc TEXT
+#        );
+#    """)
+
 with con:
     con.execute("""
         CREATE TABLE CONDITIONS(
             id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
             name TEXT,
-            desc TEXT
-        );
+            kind TEXT,
+            description TEXT,
+            
+            
+        )
     """)

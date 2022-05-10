@@ -1,4 +1,96 @@
+import random
+import re
 import sqlite3 as sl
+
+
+def roll_all_dice(expr):
+    is_valid_overall = re.match(r"^\d*[d]\d+.*", expr)
+    if is_valid_overall:
+        d = expr.find('d')
+        number_dice = expr[:d]
+        if number_dice == '':
+            number_dice = 1
+        else:
+            number_dice = int(number_dice)
+        # 2d4
+        only_roll = re.match(r"^\d*[d]\d+$", expr)
+        if only_roll:
+            number_sides = int(expr[d + 1:])
+            dice = roll_dice(number_dice, number_sides)
+            return f"You rolled: {'  '.join(dice)}  sum: {sum(list_to_int(dice))}"
+
+        # 1d4+2
+        roll_with_modifier = re.match(r"^\d*[d]\d+[+-]\d+$", expr)
+        if roll_with_modifier:
+            plus = expr.find('+')
+            if plus == -1:
+                minus = expr.find('-')
+                number_sides = int(expr[d + 1:minus])
+                mod = -int(expr[minus + 1:])
+            else:
+                number_sides = int(expr[d + 1:plus])
+                mod = int(expr[plus + 1:])
+
+            dice = roll_dice(number_dice, number_sides)
+            return f"You rolled: {'  '.join(dice)}  mod: {mod}  sum: {sum(list_to_int(dice))+mod}"
+
+        # 1d4kh1 2d4dl1
+        roll_with_drop_keep = re.match(r"^\d*[d]\d+[kd][hl]\d+$", expr)
+        if roll_with_drop_keep:
+            kh, kl, dh, dl = expr.find('kh'), expr.find('kl'), expr.find('dh'), expr.find('dl')
+            if kh != -1:
+                number_sides = int(expr[d + 1:kh])
+                keep_high = int(expr[kh + 2:])
+                dice = roll_dice(number_dice, number_sides)
+                final_rolls, extra_rolls = keep_drop(dice, 'h', number_dice - keep_high)
+            elif kl != -1:
+                number_sides = int(expr[d + 1:kl])
+                keep_low = int(expr[kl + 2:])
+                dice = roll_dice(number_dice, number_sides)
+                final_rolls, extra_rolls = keep_drop(dice, 'l', number_dice - keep_low)
+            elif dh != -1:
+                number_sides = int(expr[d + 1:dh])
+                drop_high = int(expr[dh + 2:])
+                dice = roll_dice(number_dice, number_sides)
+                final_rolls, extra_rolls = keep_drop(dice, 'l', drop_high)
+            elif dl != -1:
+                number_sides = int(expr[d + 1:dl])
+                drop_low = int(expr[dl + 2:])
+                dice = roll_dice(number_dice, number_sides)
+                final_rolls, extra_rolls = keep_drop(dice, 'h', drop_low)
+            return f"You rolled: {'  '.join(final_rolls)} {' '.join(extra_rolls)}  sum: {sum(list_to_int(final_rolls))}"
+    else:
+        return "Not a valid roll!"
+
+
+def roll_dice(number_dice, number_sides):
+    dice = [
+        str(random.choice(range(1, number_sides + 1)))
+        for _ in range(number_dice)
+    ]
+    return dice
+
+
+def list_to_int(string_list):
+    int_list = []
+    for x in string_list:
+        int_list.append(int(x))
+    return int_list
+
+
+def keep_drop(dice_rolls, high_low, mod):
+    new_rolls = dice_rolls
+    extra = []
+    for _ in range(mod):
+        if high_low == 'h':
+            mini = min(dice_rolls)
+            new_rolls.remove(mini)
+            extra.append(f"({mini})")
+        if high_low == 'l':
+            maxi = max(dice_rolls)
+            new_rolls.remove(maxi)
+            extra.append(f"({maxi})")
+    return new_rolls, extra
 
 
 def get_weapons(weapon_name):

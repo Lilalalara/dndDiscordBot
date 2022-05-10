@@ -6,7 +6,7 @@ from discord.ext import commands
 from discord.ext.commands import has_permissions
 from dotenv import load_dotenv
 from utils import get_weapons, get_all_weapons, save_new_weapons, get_spellcard, get_all_spells, save_new_spellcard, \
-    get_condition, get_all_conditions
+    get_condition, get_all_conditions, roll_all_dice
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -24,7 +24,9 @@ async def help(ctx):
         "**\!spell ls** Returns a list of all spells currently in the system\n"
         "**\!condition <condition>** Returns a short summary of the condition*(short !con)*\n"
         "**\!con ls**  Returns a list of all conditions\n\n"
-        "**\!roll <xdx>** Simulates rolling the dice *(short !r)*\n\n"
+        "**\!roll <xdx>** Simulates rolling the dice *(short !r)*\n"
+        " -> add modifiers to your rolls by using **+** or **-** \n"
+        " -> keep the highest or lowest or drop the highest or lowest by using **kh<number>** or **kl<number>** or **dh<number>** or **dl<number>**\n\n"
         "--- **For Admins when wanting to add new stuff** ---  *Always(!) put every element in quotation marks.*\n"
         "**\!addweapon '<name>' '<damage>' '<damage_type>' '<properties>'** Adds a new instance of a weapon to the database. *(short !addw)*\n"
         "**\!addspellcard '<spell>' '<spellcard>' '<short_description>'** Adds a new instance of a spell to the database.  *(short !adds)*")
@@ -48,14 +50,7 @@ async def explode(ctx):
 
 @bot.command(name='roll', aliases=['r'], help='Simulates rolling dice.')
 async def roll(ctx, roll_input):
-    d = roll_input.find('d')
-    number_dice = int(roll_input[:d])
-    number_sides = int(roll_input[d + 1:])
-    dice = [
-        str(random.choice(range(1, number_sides + 1)))
-        for _ in range(number_dice)
-    ]
-    await ctx.send('  '.join(dice))
+    await ctx.send(roll_all_dice(roll_input))
 
 
 @bot.command(name='damage', aliases=['dmg'], help='Tells you the damage of the weapon')
