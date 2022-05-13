@@ -48,12 +48,16 @@ con = sl.connect('dndinfo.db')
 
 with con:
     con.execute("""
-        CREATE TABLE CONDITIONS(
+        CREATE TABLE RACES(
             id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
             name TEXT,
             kind TEXT,
             description TEXT,
-            
-            
+            ability_score_inc TEXT,
+            age TEXT,
+            size TEXT,
+            speed TEXT,
+            languages TEXT,
+            racial_features TEXT
         )
     """)

@@ -6,7 +6,7 @@ from discord.ext import commands
 from discord.ext.commands import has_permissions
 from dotenv import load_dotenv
 from utils import get_weapons, get_all_weapons, save_new_weapons, get_spellcard, get_all_spells, save_new_spellcard, \
-    get_condition, get_all_conditions, roll_all_dice
+    get_condition, get_all_conditions, roll_all_dice, get_all_races, get_detail_race, get_overview_race
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -18,6 +18,9 @@ async def help(ctx):
     await ctx.send(
         "\n**----- All available commands -----**\n\n"
         "**\!help**  Returns this message\n \n"
+        "**\!race overview <race>** Returns an overview of the chosen race. *(short !race o)\n"
+        "**\!race detail <race>** Returns detailed information on the chosen race. *(short !race d)\n"
+        "**\!race ls** Returns a list of all races currently in the system\n\n"
         "**\!damage <weapon>**  Returns damage dice, damage type, and properties of the weapon *(short !dmg)*\n"
         "**\!dmg ls** Returns a list of all weapons currently in the system\n"
         "**\!spellcard <spell>** Returns a short summary and the spellcard of the spell *(short !spell)*\n"
@@ -82,11 +85,6 @@ async def spellcard(ctx, *args):
     await ctx.send(spell_res)
 
 
-@bot.command(name='features', aliases=['feat'], help='Tells you, what the feature is doing')
-async def features():
-    pass
-
-
 @bot.command(name='condition', aliases=['con'], help='Tells you what a condition means')
 async def condition(ctx, con):
     if con is None:
@@ -99,6 +97,24 @@ async def condition(ctx, con):
         con_res = f"I do not know! ({con} is not a condition! :person_shrugging:)"
 
     await ctx.send(con_res)
+
+
+@bot.command(name='race')
+async def races(ctx, how, *args):
+    if how == 'ls':
+        race_res = get_all_races()
+    elif (how == 'detail' or how == 'd') and args is not None:
+        race = '_'.join(args)
+        race_res = get_detail_race(race)
+    elif (how == 'overview' or how == 'o') and args is not None:
+        race = '_'.join(args)
+        race_res = get_overview_race(race)
+    else:
+        race_res = "This is not how you use this command! :person_facepalming:"
+    if race_res is None:
+        race_res = f"I do not know! ({race} is not a race! :person_shrugging:)"
+
+    await ctx.send(race_res)
 
 
 @bot.command(name='addweapon', aliases=['addw'], hidden=True)
